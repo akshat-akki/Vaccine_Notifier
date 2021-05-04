@@ -5,27 +5,66 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".MainActivity">
-
-<TextView
-    android:layout_width="wrap_content"
-    android:layout_height="wrap_content"
-    android:id="@+id/stateTextView"
-    android:text="Choose your state:"
-    android:textSize="30dp"
-    android:gravity="center"
-    android:layout_marginLeft="50dp"
-    android:layout_margin="20dp"
-    android:layout_marginTop="50dp"
-    android:textColor="@color/black"
-    ></TextView>
     <Spinner
-        android:id="@+id/spinner1"
+        android:id="@+id/spinnerState"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_below="@+id/stateTextView"
-        android:layout_marginLeft="50dp"
-        android:layout_margin="20dp"
-        android:entries="@array/country_arrays"
-        android:prompt="@string/country_prompt" />
+        android:layout_marginTop="100dp"
+        android:layout_marginLeft="20dp"
+        android:layout_marginRight="20dp"
+        />
+    <Spinner
+        android:id="@+id/spinnerDistrict"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="100dp"
+        android:layout_marginLeft="20dp"
+        android:layout_marginRight="20dp"
+        android:layout_below="@id/spinnerState"
 
+        />
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="100dp"
+        android:layout_below="@id/spinnerDistrict"
+        android:id="@+id/linearLayout"
+        android:weightSum="6"
+        >
+
+        <TextView
+            android:id="@+id/textView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginTop="20dp"
+            android:layout_weight="5"
+            android:gravity="center"
+            android:text="Do you want to receive notification when the slots are empty?"
+            android:textColor="#231F1F"
+            android:textSize="20dp"></TextView>
+        <CheckBox
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:checked="false"
+            android:id="@+id/checkBox"
+            android:layout_weight="2"
+            android:onClick="checkBoxClicked"
+            android:layout_gravity="center"
+            ></CheckBox>
+    </LinearLayout>
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/checkStatus"
+        android:layout_gravity="center_horizontal"
+        android:gravity="center"
+        android:textSize="20dp"
+        android:layout_marginTop="100dp"
+        android:layout_below="@+id/linearLayout"
+        android:layout_centerHorizontal="true"
+        android:text="Check Status"
+        android:onClick="checkStatus"
+        android:textColor="@color/white"
+        app:cornerRadius="15dp"></Button>
 </RelativeLayout>
