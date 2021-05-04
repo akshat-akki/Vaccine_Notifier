@@ -25,11 +25,7 @@ public class MainActivity extends AppCompatActivity {
         addItemsOnSpinnerState();
         addItemsOnSpinnerDistrict();
     }
-    public void notifyUser()
-    {
-        //notify the user
-        Toast.makeText(this, "CheckBox clicked", Toast.LENGTH_SHORT).show();
-    }
+    
     public void addItemsOnSpinnerState() {
         List<String> listState = new ArrayList<String>();
         listState.add("Choose one State");
