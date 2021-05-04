@@ -1,5 +1,6 @@
 package com.example.vaccine_notifier;
 
+import android.app.AlarmManager;
 import android.app.Notification;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
@@ -10,6 +11,7 @@ import android.content.Intent;
 import android.os.Build;
 import android.os.Handler;
 import android.os.IBinder;
+import android.os.SystemClock;
 
 import androidx.annotation.Nullable;
 import androidx.core.app.NotificationCompat;
@@ -38,6 +40,30 @@ public class Myservice extends Service
                     }
                 }, delay);
                 return START_STICKY;
+            }
+
+            @Override
+            public void onTaskRemoved(Intent rootIntent) {
+
+             /*   Intent restartServiceTask = new Intent(getApplicationContext(),this.getClass());
+                restartServiceTask.setPackage(getPackageName());
+                PendingIntent restartPendingIntent =PendingIntent.getService(getApplicationContext(), 1,restartServiceTask, PendingIntent.FLAG_ONE_SHOT);
+                AlarmManager myAlarmService = (AlarmManager) getApplicationContext().getSystemService(Context.ALARM_SERVICE);
+                myAlarmService.set(
+                        AlarmManager.ELAPSED_REALTIME,
+                        SystemClock.elapsedRealtime() + 1000,
+                         restartPendingIntent);
+*/
+                Intent i=new Intent(this,Myservice.class);
+                if(Build.VERSION.SDK_INT>=Build.VERSION_CODES.O)
+                {
+                    startForegroundService(i);
+                }
+                else
+                {
+                    startService(i);
+                }
+                super.onTaskRemoved(rootIntent);
             }
 
             private void createNotificationChannel() {
@@ -76,7 +102,8 @@ public class Myservice extends Service
 
             @Override
             public void onDestroy() {
-                stopForeground(true);
+
+                stopForeground(false);
                 stopSelf();
                 super.onDestroy();
             }
