@@ -36,12 +36,14 @@ import java.util.ArrayList;
 public class Myservice extends Service
         {
             String centre_id="637",date_para="05-05-2021";
-            public ArrayList<String> centre_name;
-            public ArrayList<String> date;
+            public ArrayList<String> centre_name=new ArrayList<String>();
+            public ArrayList<String> date=new ArrayList<String>();
+            public ArrayList<String> capacity_array=new ArrayList<String>();
 
             @Override
             public int onStartCommand(Intent intent, int flags, int startId) {
                 loadSlots();
+
                 createNotificationChannel();
                 Intent intent1=new Intent(this,MainActivity.class);
                 PendingIntent p=PendingIntent.getActivity(this,0 ,intent1,0);
@@ -71,32 +73,32 @@ public class Myservice extends Service
                 JsonObjectRequest stringRequest = new JsonObjectRequest(Request.Method.GET, url,null, new Response.Listener<JSONObject>() {
                             @Override
                             public void onResponse(JSONObject response) {
-
-
                                 try {
                                     //getting the whole json object from the response
                                     JSONObject obj = response;
-
                                     //we have the array named tutorial inside the object
                                     //so here we are getting that json array
                                     JSONArray centresArray = obj.getJSONArray("centers");
-
                                     //now looping through all the elements of the json array
-                                    for (int i = 0; i < centresArray.length(); i++) {
+                                    for (int i = 0; i < centresArray.length(); i++)
+                                    {
                                         //getting the json object of the particular index inside the array
                                         JSONObject centresObject = centresArray.getJSONObject(i);
                                         String name=(String)centresObject.get("name");
+                                        JSONArray sessions_array=centresObject.getJSONArray("sessions");
+                                        JSONObject session_obj=sessions_array.getJSONObject(0);
+                                        int capacity=session_obj.getInt("available_capacity");
+                                        String date_session=session_obj.getString("date");
+                                        int min_age=session_obj.getInt("min_age_limit");
                                         //creating a tutorial object and giving them the values from json object
-                                        Log.i("name",name);
-                                        //adding the tutorial to tutoriallist
-
+                                        if(capacity>0 && min_age==45)
+                                        {
+                                            centre_name.add(name);
+                                            capacity_array.add(Integer.toString(capacity));
+                                            //Log.i("name",centre_name.toString());
+                                            date.add(date_session);
+                                        }
                                     }
-
-                                    //creating custom adapter object
-
-
-                                    //adding the adapter to listview
-
 
                                 } catch (JSONException e) {
                                     e.printStackTrace();
@@ -116,64 +118,11 @@ public class Myservice extends Service
 
                 //adding the string request to request queue
                 requestQueue.add(stringRequest);
-/*               JsonObjectRequest jsonObjectRequest = new JsonObjectRequest
-                        (Request.Method.GET, url, null, new Response.Listener<JSONObject>() {
-//
-//                            @Override
-//                            public void onResponse(JSONObject response) {
-//                                if(response==null)
-//                                {
-//                                    Log.d("error","null");
-//                                    return;
-//                                }
-//                                else
-//                                {
-//                                    JSONObject obj = null;
-//                                    try {
-//                                        obj = response;
-//                                        Log.i("response",obj.toString());
-//                                        String name= (String) obj.get("name");
-//                                        Log.d("name",name);
-//                                    } catch (JSONException e) {
-//                                        e.printStackTrace();
-//                                    }
-//
-//
-//                                }
-                             /*   for (int i = 0; i < response.length(); i++) {
-                                    try {
-                                        JSONObject obj = response.getJSONObject(i);
-                                        String name= (String) obj.get("name");
-                                        JSONArray session=new JSONArray(obj.get("sessions"));
-                                        JSONObject session_obj=session.getJSONObject(0);
-                                        int capacity=session_obj.getInt("available_capacity");
-                                        String date_session=session_obj.getString("date");
-                                        int min_age=session_obj.getInt("min_age_limit");
-                                        if(capacity>0 && min_age>18)
-                                        {
-                                            centre_name.add(name);
-                                            date.add(date_session);
-                                        }
-
-                                    } catch (JSONException e) {
-                                        e.printStackTrace();
-                                    }
-                                }*/
-                            }
-//                        }, new Response.ErrorListener() {
-//
-//                            @Override
-//                            public void onErrorResponse(VolleyError error) {
-//                                //
-//                                    error.printStackTrace();
-//                            }
-//                        });
-               // queue.add(jsonObjectRequest);
-            /*    for(int i=0;i<centre_name.size();i++)
+                for(int i=0;i<centre_name.size();i++)
                 {
                     Log.d("Centre names",centre_name.get(i));
-                }*/
-           // }
+                }
+            }
             @Override
             public void onTaskRemoved(Intent rootIntent) {
 
