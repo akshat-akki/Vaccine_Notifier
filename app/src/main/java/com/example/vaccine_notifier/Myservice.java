@@ -68,15 +68,14 @@ public class Myservice extends Service
 
                 RequestQueue queue = Volley.newRequestQueue(this);
                 String url ="https://cdn-api.co-vin.in/api/v2/appointment/sessions/public/calendarByDistrict?district_id="+centre_id+"&date="+date_para;
-                StringRequest stringRequest = new StringRequest(Request.Method.GET, url,
-                        new Response.Listener<String>() {
+                JsonObjectRequest stringRequest = new JsonObjectRequest(Request.Method.GET, url,null, new Response.Listener<JSONObject>() {
                             @Override
-                            public void onResponse(String response) {
+                            public void onResponse(JSONObject response) {
 
 
                                 try {
                                     //getting the whole json object from the response
-                                    JSONObject obj = new JSONObject(response);
+                                    JSONObject obj = response;
 
                                     //we have the array named tutorial inside the object
                                     //so here we are getting that json array
@@ -117,8 +116,8 @@ public class Myservice extends Service
 
                 //adding the string request to request queue
                 requestQueue.add(stringRequest);
-//                JsonObjectRequest jsonObjectRequest = new JsonObjectRequest
-//                        (Request.Method.GET, url, null, new Response.Listener<JSONObject>() {
+/*               JsonObjectRequest jsonObjectRequest = new JsonObjectRequest
+                        (Request.Method.GET, url, null, new Response.Listener<JSONObject>() {
 //
 //                            @Override
 //                            public void onResponse(JSONObject response) {
