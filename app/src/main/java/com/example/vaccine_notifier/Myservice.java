@@ -31,10 +31,17 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.Locale;
 
 public class Myservice extends Service
         {
+            Calendar c = Calendar.getInstance();
+
+
             String centre_id="637",date_para="05-05-2021";
             public ArrayList<String> centre_name=new ArrayList<String>();
             public ArrayList<String> date=new ArrayList<String>();
@@ -42,6 +49,7 @@ public class Myservice extends Service
 
             @Override
             public int onStartCommand(Intent intent, int flags, int startId) {
+              //  Log.d("date",formattedDate);
                 loadSlots();
 
                 createNotificationChannel();
@@ -65,61 +73,64 @@ public class Myservice extends Service
                 }, delay);
                 return START_STICKY;
             }
-            public void loadSlots()
+            private void loadSlots()
             {
-                RequestQueue queue = Volley.newRequestQueue(this);
-                String url ="https://cdn-api.co-vin.in/api/v2/appointment/sessions/public/calendarByDistrict?district_id="+centre_id+"&date="+date_para;
-                JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.GET, url,null, new Response.Listener<JSONObject>() {
-                            @Override
-                            public void onResponse(JSONObject response) {
-                                try {
-                                    //getting the whole json object from the response
-                                    JSONObject obj = response;
-                                    //we have the array named tutorial inside the object
-                                    //so here we are getting that json array
-                                    JSONArray centresArray = obj.getJSONArray("centers");
-                                    //now looping through all the elements of the json array
-                                    for (int i = 0; i < centresArray.length(); i++)
-                                    {
-                                        //getting the json object of the particular index inside the array
-                                        JSONObject centresObject = centresArray.getJSONObject(i);
-                                        String name=(String)centresObject.get("name");
-                                        JSONArray sessions_array=centresObject.getJSONArray("sessions");
-                                        JSONObject session_obj=sessions_array.getJSONObject(0);
-                                        int capacity=session_obj.getInt("available_capacity");
-                                        String date_session=session_obj.getString("date");
-                                        int min_age=session_obj.getInt("min_age_limit");
-                                        //creating a tutorial object and giving them the values from json object
-                                        if(capacity>0 && min_age==45)
-                                        {
-                                            centre_name.add(name);
-                                            capacity_array.add(Integer.toString(capacity));
-                                            //Log.i("name",centre_name.toString());
-                                            date.add(date_session);
-                                        }
-                                    }
-
-                                } catch (JSONException e) {
-                                    e.printStackTrace();
-                                }
-                            }
-                        },
-                        new Response.ErrorListener() {
-                            @Override
-                            public void onErrorResponse(VolleyError error) {
-                                //displaying the error in toast if occur
-                                Toast.makeText(getApplicationContext(), error.getMessage(), Toast.LENGTH_SHORT).show();
-                            }
-                        });
-
-                //creating a request queue
-                RequestQueue requestQueue = Volley.newRequestQueue(this);
-
-                //adding the string request to request queue
-                requestQueue.add(jsonObjectRequest);
-                for(int i=0;i<centre_name.size();i++)
+                SimpleDateFormat df = new SimpleDateFormat("dd-MM-yyyy", Locale.getDefault());
+                for(int k=0;k<8;k++)
                 {
-                    Log.d("Centre names",centre_name.get(i));
+                    if(k!=0)
+                    c.add(Calendar.DATE,7);
+                    String formattedDate = df.format(c.getTime());
+                    Log.d("date",formattedDate);
+                    date_para=formattedDate;
+                    RequestQueue queue = Volley.newRequestQueue(this);
+                    String url = "https://cdn-api.co-vin.in/api/v2/appointment/sessions/public/calendarByDistrict?district_id=" + centre_id + "&date=" + date_para;
+                    JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.GET, url, null, new Response.Listener<JSONObject>() {
+                        @Override
+                        public void onResponse(JSONObject response) {
+                            try {
+                                //getting the whole json object from the response
+                                JSONObject obj = response;
+                                //we have the array named tutorial inside the object
+                                //so here we are getting that json array
+                                JSONArray centresArray = obj.getJSONArray("centers");
+                                //now looping through all the elements of the json array
+                                for (int i = 0; i < centresArray.length(); i++) {
+                                    //getting the json object of the particular index inside the array
+                                    JSONObject centresObject = centresArray.getJSONObject(i);
+                                    String name = (String) centresObject.get("name");
+                                    JSONArray sessions_array = centresObject.getJSONArray("sessions");
+                                    JSONObject session_obj = sessions_array.getJSONObject(0);
+                                    int capacity = session_obj.getInt("available_capacity");
+                                    String date_session = session_obj.getString("date");
+                                    int min_age = session_obj.getInt("min_age_limit");
+                                 if (capacity > 0 && min_age == 45) {
+                                        centre_name.add(name);
+                                        capacity_array.add(Integer.toString(capacity));
+                                        Log.i("name",name);
+                                        Log.i("centre date",date_session);
+                                        date.add(date_session);
+                                    }
+                                }
+
+                            } catch (JSONException e) {
+                                e.printStackTrace();
+                            }
+                        }
+                    },
+                            new Response.ErrorListener() {
+                                @Override
+                                public void onErrorResponse(VolleyError error) {
+                                    //displaying the error in toast if occur
+                                    Toast.makeText(getApplicationContext(), error.getMessage(), Toast.LENGTH_SHORT).show();
+                                }
+                            });
+
+                    //creating a request queue
+                    queue.add(jsonObjectRequest);
+
+                     //   Log.d("Centre names", centre_name.toString());
+
                 }
             }
             @Override
