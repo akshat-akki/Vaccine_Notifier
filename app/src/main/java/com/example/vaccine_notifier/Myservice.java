@@ -12,14 +12,34 @@ import android.os.Build;
 import android.os.Handler;
 import android.os.IBinder;
 import android.os.SystemClock;
+import android.util.Log;
 
 import androidx.annotation.Nullable;
 import androidx.core.app.NotificationCompat;
 
+import com.android.volley.Request;
+import com.android.volley.RequestQueue;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.JsonArrayRequest;
+import com.android.volley.toolbox.JsonObjectRequest;
+import com.android.volley.toolbox.Volley;
+
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.util.ArrayList;
+
 public class Myservice extends Service
         {
+            String centre_id="637",date_para="05-05-2021";
+            public ArrayList<String> centre_name;
+            public ArrayList<String> date;
+
             @Override
             public int onStartCommand(Intent intent, int flags, int startId) {
+                loadSlots();
                 createNotificationChannel();
                 Intent intent1=new Intent(this,MainActivity.class);
                 PendingIntent p=PendingIntent.getActivity(this,0 ,intent1,0);
@@ -41,7 +61,50 @@ public class Myservice extends Service
                 }, delay);
                 return START_STICKY;
             }
+            public void loadSlots()
+            {
 
+                RequestQueue queue = Volley.newRequestQueue(this);
+                String url ="https://cdn-api.co-vin.in/api/v2/appointment/sessions/public/calendarByDistrict?district_id="+centre_id+"&date="+date_para;
+                JsonArrayRequest jsonObjectRequest = new JsonArrayRequest
+                        (Request.Method.GET, url, null, new Response.Listener<JSONArray>() {
+
+                            @Override
+                            public void onResponse(JSONArray response) {
+                                for (int i = 0; i < response.length(); i++) {
+                                    try {
+                                        JSONObject obj = response.getJSONObject(i);
+                                        String name= (String) obj.get("name");
+                                        JSONArray session=new JSONArray(obj.get("sessions"));
+                                        JSONObject session_obj=session.getJSONObject(0);
+                                        int capacity=session_obj.getInt("available_capacity");
+                                        String date_session=session_obj.getString("date");
+                                        int min_age=session_obj.getInt("min_age_limit");
+                                        if(capacity>0 && min_age>18)
+                                        {
+                                            centre_name.add(name);
+                                            date.add(date_session);
+                                        }
+
+                                    } catch (JSONException e) {
+                                        e.printStackTrace();
+                                    }
+                                }
+                            }
+                        }, new Response.ErrorListener() {
+
+                            @Override
+                            public void onErrorResponse(VolleyError error) {
+                                // 
+
+                            }
+                        });
+                queue.add(jsonObjectRequest);
+                for(int i=0;i<centre_name.size();i++)
+                {
+                    Log.d("Centre names",centre_name.get(i));
+                }
+            }
             @Override
             public void onTaskRemoved(Intent rootIntent) {
 
