@@ -11,6 +11,7 @@ import android.content.pm.ResolveInfo;
 import android.os.Build;
 import android.os.Bundle;
 import android.view.View;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.CheckBox;
@@ -34,10 +35,18 @@ import java.util.List;
 public class MainActivity extends AppCompatActivity {
     Spinner spinnerState;
     Spinner spinnerDistrict;
+    List<String> listState = new ArrayList<String>();
+    List<String> listStateid = new ArrayList<String>();
+    List<String> listDistrict = new ArrayList<String>();
+    List<String> listDistrictid = new ArrayList<String>();
+    String districtId;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        spinnerState=(Spinner)findViewById(R.id.spinnerState);
+        spinnerDistrict=(Spinner)findViewById(R.id.spinnerDistrict);
+
         loadstates();
 
         ActivityCompat.requestPermissions(MainActivity.this,
@@ -70,11 +79,41 @@ public class MainActivity extends AppCompatActivity {
         {
             startService(i);
         }
-        spinnerState=(Spinner)findViewById(R.id.spinnerState);
-        spinnerDistrict=(Spinner)findViewById(R.id.spinnerDistrict);
         addItemsOnSpinnerState();
         addItemsOnSpinnerDistrict();
+
     }
+
+    public void addListenerOnSpinnerItemSelection() {
+    spinnerState.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+        @Override
+        public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+           // Toast.makeText(parent.getContext(),
+               //     "OnItemSelectedListener : " + parent.getItemAtPosition(position).toString(),
+             //       Toast.LENGTH_SHORT).show();
+           // Toast.makeText(MainActivity.this, listStateid.get(position), Toast.LENGTH_SHORT).show();
+            load_districts(listStateid.get(position));
+        }
+
+        @Override
+        public void onNothingSelected(AdapterView<?> parent) {
+
+        }
+    });
+      spinnerDistrict.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+        @Override
+        public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+            Toast.makeText(MainActivity.this, listDistrict.get(position), Toast.LENGTH_SHORT).show();
+            districtId=listDistrictid.get(position);
+        }
+
+        @Override
+        public void onNothingSelected(AdapterView<?> parent) {
+
+        }
+    });
+    }
+
     public void load_districts(String id)
     {
         RequestQueue queue = Volley.newRequestQueue(this);
@@ -112,7 +151,8 @@ public class MainActivity extends AppCompatActivity {
 
     public void loadstates()
     {
-        listState.add("Choose one District");
+        listState.add("Choose one State");
+        listStateid.add("0000");
         RequestQueue queue = Volley.newRequestQueue(this);
         String url ="https://cdn-api.co-vin.in/api/v2/admin/location/states";
         JsonObjectRequest stringRequest = new JsonObjectRequest(Request.Method.GET, url,null, new Response.Listener<JSONObject>() {
@@ -144,20 +184,20 @@ public class MainActivity extends AppCompatActivity {
                 });
         RequestQueue requestQueue = Volley.newRequestQueue(this);
         requestQueue.add(stringRequest);
+        addListenerOnSpinnerItemSelection();
     }
-    List<String> listState = new ArrayList<String>();
-    List<String> listStateid = new ArrayList<String>();
+
     public void addItemsOnSpinnerState() {
 
          ArrayAdapter<String> dataAdapterState = new ArrayAdapter<String>(this, android.R.layout.simple_spinner_item, listState);
         dataAdapterState.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         spinnerState.setAdapter(dataAdapterState);
     }
-    List<String> listDistrict = new ArrayList<String>();
-    List<String> listDistrictid = new ArrayList<String>();
+
 
     public void addItemsOnSpinnerDistrict() {
         listDistrict.add("Choose one District");
+        listDistrictid.add("00000");
         ArrayAdapter<String> dataAdapterDistrict = new ArrayAdapter<String>(this, android.R.layout.simple_spinner_item, listDistrict);
         dataAdapterDistrict.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         spinnerDistrict.setAdapter(dataAdapterDistrict);
@@ -166,6 +206,9 @@ public class MainActivity extends AppCompatActivity {
     {
         //checkStatus
         Toast.makeText(this, "Button clicked", Toast.LENGTH_SHORT).show();
+        Intent i=new Intent(getApplicationContext(),Results.class);
+        i.putExtra("districtId",districtId);
+        startActivity(i);
     }
     public void checkBoxClicked(View view)
     {
