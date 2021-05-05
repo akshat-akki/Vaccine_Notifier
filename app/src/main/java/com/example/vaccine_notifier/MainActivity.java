@@ -92,6 +92,7 @@ public class MainActivity extends AppCompatActivity {
                //     "OnItemSelectedListener : " + parent.getItemAtPosition(position).toString(),
              //       Toast.LENGTH_SHORT).show();
            // Toast.makeText(MainActivity.this, listStateid.get(position), Toast.LENGTH_SHORT).show();
+            if(position!=0)
             load_districts(listStateid.get(position));
         }
 
@@ -104,6 +105,7 @@ public class MainActivity extends AppCompatActivity {
         @Override
         public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
             Toast.makeText(MainActivity.this, listDistrict.get(position), Toast.LENGTH_SHORT).show();
+            if(position!=0)
             districtId=listDistrictid.get(position);
         }
 
