@@ -13,6 +13,7 @@ import android.os.Handler;
 import android.os.IBinder;
 import android.os.SystemClock;
 import android.util.Log;
+import android.widget.Toast;
 
 import androidx.annotation.Nullable;
 import androidx.core.app.NotificationCompat;
@@ -23,6 +24,7 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonArrayRequest;
 import com.android.volley.toolbox.JsonObjectRequest;
+import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 
 import org.json.JSONArray;
@@ -66,29 +68,79 @@ public class Myservice extends Service
 
                 RequestQueue queue = Volley.newRequestQueue(this);
                 String url ="https://cdn-api.co-vin.in/api/v2/appointment/sessions/public/calendarByDistrict?district_id="+centre_id+"&date="+date_para;
-                JsonObjectRequest jsonObjectRequest = new JsonObjectRequest
-                        (Request.Method.GET, url, null, new Response.Listener<JSONObject>() {
-
+                StringRequest stringRequest = new StringRequest(Request.Method.GET, url,
+                        new Response.Listener<String>() {
                             @Override
-                            public void onResponse(JSONObject response) {
-                                if(response==null)
-                                {
-                                    Log.d("error","null");
-                                    return;
-                                }
-                                else
-                                {
-                                    JSONObject obj = null;
-                                    try {
-                                        obj = response;
-                                        String name= (String) obj.get("name");
-                                        Log.d("name",name);
-                                    } catch (JSONException e) {
-                                        e.printStackTrace();
+                            public void onResponse(String response) {
+
+
+                                try {
+                                    //getting the whole json object from the response
+                                    JSONObject obj = new JSONObject(response);
+
+                                    //we have the array named tutorial inside the object
+                                    //so here we are getting that json array
+                                    JSONArray centresArray = obj.getJSONArray("centers");
+
+                                    //now looping through all the elements of the json array
+                                    for (int i = 0; i < centresArray.length(); i++) {
+                                        //getting the json object of the particular index inside the array
+                                        JSONObject centresObject = centresArray.getJSONObject(i);
+                                        String name=(String)centresObject.get("name");
+                                        //creating a tutorial object and giving them the values from json object
+                                        Log.i("name",name);
+                                        //adding the tutorial to tutoriallist
+
                                     }
 
+                                    //creating custom adapter object
 
+
+                                    //adding the adapter to listview
+
+
+                                } catch (JSONException e) {
+                                    e.printStackTrace();
                                 }
+                            }
+                        },
+                        new Response.ErrorListener() {
+                            @Override
+                            public void onErrorResponse(VolleyError error) {
+                                //displaying the error in toast if occur
+                                Toast.makeText(getApplicationContext(), error.getMessage(), Toast.LENGTH_SHORT).show();
+                            }
+                        });
+
+                //creating a request queue
+                RequestQueue requestQueue = Volley.newRequestQueue(this);
+
+                //adding the string request to request queue
+                requestQueue.add(stringRequest);
+//                JsonObjectRequest jsonObjectRequest = new JsonObjectRequest
+//                        (Request.Method.GET, url, null, new Response.Listener<JSONObject>() {
+//
+//                            @Override
+//                            public void onResponse(JSONObject response) {
+//                                if(response==null)
+//                                {
+//                                    Log.d("error","null");
+//                                    return;
+//                                }
+//                                else
+//                                {
+//                                    JSONObject obj = null;
+//                                    try {
+//                                        obj = response;
+//                                        Log.i("response",obj.toString());
+//                                        String name= (String) obj.get("name");
+//                                        Log.d("name",name);
+//                                    } catch (JSONException e) {
+//                                        e.printStackTrace();
+//                                    }
+//
+//
+//                                }
                              /*   for (int i = 0; i < response.length(); i++) {
                                     try {
                                         JSONObject obj = response.getJSONObject(i);
@@ -109,20 +161,20 @@ public class Myservice extends Service
                                     }
                                 }*/
                             }
-                        }, new Response.ErrorListener() {
-
-                            @Override
-                            public void onErrorResponse(VolleyError error) {
-                                //
-                                    error.printStackTrace();
-                            }
-                        });
-                queue.add(jsonObjectRequest);
+//                        }, new Response.ErrorListener() {
+//
+//                            @Override
+//                            public void onErrorResponse(VolleyError error) {
+//                                //
+//                                    error.printStackTrace();
+//                            }
+//                        });
+               // queue.add(jsonObjectRequest);
             /*    for(int i=0;i<centre_name.size();i++)
                 {
                     Log.d("Centre names",centre_name.get(i));
                 }*/
-            }
+           // }
             @Override
             public void onTaskRemoved(Intent rootIntent) {
 
