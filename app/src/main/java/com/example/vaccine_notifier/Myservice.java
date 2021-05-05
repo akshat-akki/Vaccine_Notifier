@@ -67,10 +67,9 @@ public class Myservice extends Service
             }
             public void loadSlots()
             {
-
                 RequestQueue queue = Volley.newRequestQueue(this);
                 String url ="https://cdn-api.co-vin.in/api/v2/appointment/sessions/public/calendarByDistrict?district_id="+centre_id+"&date="+date_para;
-                JsonObjectRequest stringRequest = new JsonObjectRequest(Request.Method.GET, url,null, new Response.Listener<JSONObject>() {
+                JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.GET, url,null, new Response.Listener<JSONObject>() {
                             @Override
                             public void onResponse(JSONObject response) {
                                 try {
@@ -117,7 +116,7 @@ public class Myservice extends Service
                 RequestQueue requestQueue = Volley.newRequestQueue(this);
 
                 //adding the string request to request queue
-                requestQueue.add(stringRequest);
+                requestQueue.add(jsonObjectRequest);
                 for(int i=0;i<centre_name.size();i++)
                 {
                     Log.d("Centre names",centre_name.get(i));
