@@ -8,15 +8,20 @@ import android.content.ComponentName;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
+import android.graphics.Color;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Handler;
 import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.CheckBox;
+import android.widget.CompoundButton;
 import android.widget.Spinner;
+import android.widget.Switch;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.android.volley.Request;
@@ -44,12 +49,14 @@ public class MainActivity extends AppCompatActivity {
     List<String> listDistrictid = new ArrayList<String>();
     String districtId;
     int Min_age=45;
+    int notif=1;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         spinnerState=(Spinner)findViewById(R.id.spinnerState);
         spinnerDistrict=(Spinner)findViewById(R.id.spinnerDistrict);
+        findViewById(R.id.progressBar).setVisibility(View.INVISIBLE);
 
         loadstates();
 
@@ -74,6 +81,34 @@ public class MainActivity extends AppCompatActivity {
         } catch (Exception e) {
 
         }
+        Switch s=(Switch)findViewById(R.id.switch2);
+        s.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                if (isChecked) {
+                    Min_age=18;
+                    Toast.makeText(MainActivity.this,Integer.toString(Min_age), Toast.LENGTH_SHORT).show();
+
+                } else {
+                    Min_age=45;
+                }
+            }
+        });
+        CheckBox c=findViewById(R.id.checkBox);
+        c.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
+                if(b)
+                {
+                    notif=1;
+                   // Toast.makeText(MainActivity.this,Integer.toString(notif), Toast.LENGTH_SHORT).show();
+
+                }
+                else
+                {
+                    notif=0;
+                }
+            }
+        });
         addItemsOnSpinnerState();
         addItemsOnSpinnerDistrict();
 
@@ -89,6 +124,8 @@ public class MainActivity extends AppCompatActivity {
            // Toast.makeText(MainActivity.this, listStateid.get(position), Toast.LENGTH_SHORT).show();
             if(position!=0)
             load_districts(listStateid.get(position));
+            ((TextView) parent.getChildAt(0)).setTextColor(Color.BLACK);
+            ((TextView) parent.getChildAt(0)).setTextSize(18);
         }
 
         @Override
@@ -99,9 +136,11 @@ public class MainActivity extends AppCompatActivity {
       spinnerDistrict.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
         @Override
         public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-            Toast.makeText(MainActivity.this, listDistrict.get(position), Toast.LENGTH_SHORT).show();
+          //  Toast.makeText(MainActivity.this, listDistrict.get(position), Toast.LENGTH_SHORT).show();
             if(position!=0)
             districtId=listDistrictid.get(position);
+            ((TextView) parent.getChildAt(0)).setTextColor(Color.BLACK);
+            ((TextView) parent.getChildAt(0)).setTextSize(18);
         }
 
         @Override
@@ -219,10 +258,10 @@ public class MainActivity extends AppCompatActivity {
     public void checkStatus(View view)
     {
 
-        //checkStatus
-        Intent in=new Intent(this,Myservice.class);
+        Intent in=new Intent(getApplicationContext(),Myservice.class);
         in.putExtra("disid",districtId);
         in.putExtra("age",Min_age);
+        in.putExtra("notif",notif);
         if(Build.VERSION.SDK_INT>=Build.VERSION_CODES.O)
         {
             startForegroundService(in);
@@ -231,19 +270,32 @@ public class MainActivity extends AppCompatActivity {
         {
             startService(in);
         }
+        findViewById(R.id.progressBar).setVisibility(View.VISIBLE);
+        // Do your work here
 
         //Toast.makeText(this, "Button clicked", Toast.LENGTH_SHORT).show();
-        Intent intent=new Intent(getApplicationContext(),Results.class);
-        startActivity(intent);
+        final Handler handler = new Handler();
+        final int delay = 2000;
+        handler.postDelayed(new Runnable() {
+            public void run() {
+                findViewById(R.id.progressBar).setVisibility(View.INVISIBLE);
+                Intent intent = new Intent(getApplicationContext(), Results.class);
+                startActivity(intent);
+                finish();
+            }
+        }, delay);
+
     }
+
+
     public void checkBoxClicked(View view)
     {
         //checkStatus
-        Toast.makeText(this, "CheckBox clicked", Toast.LENGTH_SHORT).show();
+       // Toast.makeText(this, "CheckBox clicked", Toast.LENGTH_SHORT).show();
     }
     public void ageclick(View view)
     {
         //AGE
-        Min_age=18;
+
     }
 }

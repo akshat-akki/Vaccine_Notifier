@@ -43,51 +43,72 @@ public class Myservice extends Service
         {
             Calendar c = Calendar.getInstance();
 
-
+            int count=0;
+            int precount=0;
             String centre_id="637",date_para="05-05-2021";
             int age=45;
             public static ArrayList<String> centre_name=new ArrayList<String>();
             public static ArrayList<String> date=new ArrayList<String>();
             public static ArrayList<String> capacity_array=new ArrayList<String>();
-
+            int noti=0;
             @Override
             public int onStartCommand(Intent intent, int flags, int startId) {
               //  Log.d("date",formattedDate);
               // MainActivity mainActivity=new MainActivity();
               age=intent.getIntExtra("age",45);
+                Toast.makeText(this,Integer.toString(age), Toast.LENGTH_SHORT).show();
+              //  age=18;
               centre_id=intent.getStringExtra("disid");
+              noti=intent.getIntExtra("notif",1);
+              //  Toast.makeText(this, Integer.toString(noti), Toast.LENGTH_LONG).show();
                 loadSlots();
+                precount=count;
 
-                createNotificationChannel();
-                Intent intent1=new Intent(this,MainActivity.class);
-                PendingIntent p=PendingIntent.getActivity(this,0 ,intent1,0);
-                Notification notification=new NotificationCompat.Builder(this,"channel1")
-                        .setContentTitle("Vaccine_Notifier")
-                        .setContentText("Constantly checking for vacant slots!!")
-                        .setSmallIcon(R.mipmap.ic_launcher)
-                        .setContentIntent(p).build();
-                startForeground(1,notification);
-                final Handler handler = new Handler();
-                final int delay = 60*1000; // 1000 milliseconds == 1 second
-
-                handler.postDelayed(new Runnable() {
-                    public void run() {
-                         // Do your work here
-                        showNotification("Vacinne available","slot 1");
-                        handler.postDelayed(this, delay);
-                    }
-                }, delay);
+                    createNotificationChannel();
+                    Intent intent1 = new Intent(this, MainActivity.class);
+                    PendingIntent p = PendingIntent.getActivity(this, 0, intent1, 0);
+                if(noti==1) {
+                    Notification notification = new NotificationCompat.Builder(this, "channel1")
+                            .setContentTitle("Vaccine_Notifier")
+                            .setContentText("Constantly checking for vacant slots!!")
+                            .setSmallIcon(R.mipmap.ic_launcher)
+                            .setContentIntent(p).build();
+                    startForeground(1, notification);
+                }
+                else
+                {
+                    Notification notification = new NotificationCompat.Builder(this, "channel1")
+                            .setContentTitle("Vaccine_Notifier")
+                            .setContentText("Tap to check for vacant slots!!")
+                            .setSmallIcon(R.mipmap.ic_launcher)
+                            .setContentIntent(p).build();
+                    startForeground(1, notification);
+                }
+                    final Handler handler = new Handler();
+                    final int delay = 5 * 60 * 1000; // 1000 milliseconds == 1 second
+                if(noti==1) {
+                    handler.postDelayed(new Runnable() {
+                        public void run() {
+                            // Do your work here
+                            loadSlots();
+                            if (precount < count) {
+                                showNotification("VACCINE NOTIFIER", "NEW SLOTS AVAILABLE!! TAP TO CHECK NOW");
+                            }
+                            handler.postDelayed(this, delay);
+                        }
+                    }, delay);
 //                Intent i=new Intent(getApplicationContext(),Results.class);
 //                i.putExtra("centreName",centre_name);
 //                i.putExtra("date",date);
 //                i.putExtra("availability",capacity_array);
 //                startActivity(i);
+                }
                 return START_STICKY;
             }
             private void loadSlots()
             {
                 SimpleDateFormat df = new SimpleDateFormat("dd-MM-yyyy", Locale.getDefault());
-                for(int k=0;k<1;k++)
+                for(int k=0;k<4;k++)
                 {
                     if(k!=0)
                     c.add(Calendar.DATE,7);
@@ -116,19 +137,22 @@ public class Myservice extends Service
                                     int capacity = session_obj.getInt("available_capacity");
                                     String date_session = session_obj.getString("date");
                                     int min_age = session_obj.getInt("min_age_limit");
-                                    Log.i("name",name);
-                                 if (capacity > 0 && min_age == age) {
+                                   // Log.i("name",name);
+                                 if (capacity > 0 && min_age == age)
+                                 {
                                         centre_name.add(name);
                                         capacity_array.add(Integer.toString(capacity));
                                         Log.i("name",name);
                                         Log.i("centre date",date_session);
                                         date.add(date_session);
-                                    }
+                                 }
                                 }
+                                count =centre_name.size();
 
                             } catch (JSONException e) {
                                 e.printStackTrace();
                             }
+
                         }
                     },
                             new Response.ErrorListener() {
