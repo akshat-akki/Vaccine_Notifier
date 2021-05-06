@@ -35,7 +35,9 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.Locale;
+import java.util.Map;
 
 public class Myservice extends Service
         {
@@ -43,6 +45,7 @@ public class Myservice extends Service
 
 
             String centre_id="637",date_para="05-05-2021";
+            int age=45;
             public ArrayList<String> centre_name=new ArrayList<String>();
             public ArrayList<String> date=new ArrayList<String>();
             public ArrayList<String> capacity_array=new ArrayList<String>();
@@ -50,6 +53,9 @@ public class Myservice extends Service
             @Override
             public int onStartCommand(Intent intent, int flags, int startId) {
               //  Log.d("date",formattedDate);
+              // MainActivity mainActivity=new MainActivity();
+              age=intent.getIntExtra("age");
+              centre_id=intent.getStringExtra("disid");
                 loadSlots();
 
                 createNotificationChannel();
@@ -62,7 +68,7 @@ public class Myservice extends Service
                         .setContentIntent(p).build();
                 startForeground(1,notification);
                 final Handler handler = new Handler();
-                final int delay = 10000; // 1000 milliseconds == 1 second
+                final int delay = 60*1000; // 1000 milliseconds == 1 second
 
                 handler.postDelayed(new Runnable() {
                     public void run() {
@@ -76,7 +82,7 @@ public class Myservice extends Service
             private void loadSlots()
             {
                 SimpleDateFormat df = new SimpleDateFormat("dd-MM-yyyy", Locale.getDefault());
-                for(int k=0;k<8;k++)
+                for(int k=0;k<1;k++)
                 {
                     if(k!=0)
                     c.add(Calendar.DATE,7);
@@ -88,6 +94,7 @@ public class Myservice extends Service
                     JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.GET, url, null, new Response.Listener<JSONObject>() {
                         @Override
                         public void onResponse(JSONObject response) {
+                            Log.v("slots","called");
                             try {
                                 //getting the whole json object from the response
                                 JSONObject obj = response;
@@ -104,7 +111,7 @@ public class Myservice extends Service
                                     int capacity = session_obj.getInt("available_capacity");
                                     String date_session = session_obj.getString("date");
                                     int min_age = session_obj.getInt("min_age_limit");
-                                 if (capacity > 0 && min_age == 45) {
+                                 if (capacity > 0 && min_age == age) {
                                         centre_name.add(name);
                                         capacity_array.add(Integer.toString(capacity));
                                         Log.i("name",name);
@@ -124,12 +131,20 @@ public class Myservice extends Service
                                     //displaying the error in toast if occur
                                     Toast.makeText(getApplicationContext(), error.getMessage(), Toast.LENGTH_SHORT).show();
                                 }
-                            });
+                            }){
+                        @Override
+                        public Map<String, String> getHeaders(){
+                            Map<String, String> headers = new HashMap<String, String>();
+                            headers.put("User-agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/90.0.4430.93 Safari/537.36");
+                            return headers;
+                        }
+                    };
 
                     //creating a request queue
-                    queue.add(jsonObjectRequest);
+                    MySingleton.getInstance(this).addToRequestQueue(jsonObjectRequest);
 
-                     //   Log.d("Centre names", centre_name.toString());
+
+                    //   Log.d("Centre names", centre_name.toString());
 
                 }
             }

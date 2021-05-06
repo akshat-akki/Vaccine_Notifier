@@ -10,6 +10,7 @@ import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
 import android.os.Build;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
@@ -30,7 +31,9 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class MainActivity extends AppCompatActivity {
     Spinner spinnerState;
@@ -40,6 +43,7 @@ public class MainActivity extends AppCompatActivity {
     List<String> listDistrict = new ArrayList<String>();
     List<String> listDistrictid = new ArrayList<String>();
     String districtId;
+    int Min_age=45;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -69,15 +73,6 @@ public class MainActivity extends AppCompatActivity {
             }
         } catch (Exception e) {
 
-        }
-        Intent i=new Intent(this,Myservice.class);
-        if(Build.VERSION.SDK_INT>=Build.VERSION_CODES.O)
-        {
-            startForegroundService(i);
-        }
-        else
-        {
-            startService(i);
         }
         addItemsOnSpinnerState();
         addItemsOnSpinnerDistrict();
@@ -118,11 +113,12 @@ public class MainActivity extends AppCompatActivity {
 
     public void load_districts(String id)
     {
-        RequestQueue queue = Volley.newRequestQueue(this);
+        RequestQueue queue2= Volley.newRequestQueue(this);
         String url ="https://cdn-api.co-vin.in/api/v2/admin/location/districts/"+id;
         JsonObjectRequest objectRequest = new JsonObjectRequest(Request.Method.GET, url,null, new Response.Listener<JSONObject>() {
             @Override
             public void onResponse(JSONObject response) {
+                Log.v("dist","called");
                 try {
                     JSONObject obj = response;
                     JSONArray centresArray = obj.getJSONArray("districts");
@@ -146,9 +142,16 @@ public class MainActivity extends AppCompatActivity {
                 //displaying the error in toast if occur
                 Toast.makeText(getApplicationContext(), error.getMessage(), Toast.LENGTH_SHORT).show();
             }
-        });
-        RequestQueue requestQueue = Volley.newRequestQueue(this);
-        requestQueue.add(objectRequest);
+        }) {
+            @Override
+            public Map<String, String> getHeaders() {
+                Map<String, String> headers = new HashMap<String, String>();
+                headers.put("User-agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/90.0.4430.93 Safari/537.36");
+                return headers;
+            }
+        };
+      //  queue2.add(objectRequest);
+        MySingleton.getInstance(this).addToRequestQueue(objectRequest);
     }
 
     public void loadstates()
@@ -160,6 +163,7 @@ public class MainActivity extends AppCompatActivity {
         JsonObjectRequest stringRequest = new JsonObjectRequest(Request.Method.GET, url,null, new Response.Listener<JSONObject>() {
             @Override
             public void onResponse(JSONObject response) {
+                Log.v("state","called");
                 try {
                     JSONObject obj = response;
                     JSONArray centresArray = obj.getJSONArray("states");
@@ -183,9 +187,16 @@ public class MainActivity extends AppCompatActivity {
                         //displaying the error in toast if occur
                         Toast.makeText(getApplicationContext(), error.getMessage(), Toast.LENGTH_SHORT).show();
                     }
-                });
-        RequestQueue requestQueue = Volley.newRequestQueue(this);
-        requestQueue.add(stringRequest);
+                }){
+            @Override
+            public Map<String, String> getHeaders(){
+                Map<String, String> headers = new HashMap<String, String>();
+                headers.put("User-agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/90.0.4430.93 Safari/537.36");
+                return headers;
+            }
+        };
+      //  queue.add(stringRequest);
+        MySingleton.getInstance(this).addToRequestQueue(stringRequest);
         addListenerOnSpinnerItemSelection();
     }
 
@@ -206,7 +217,20 @@ public class MainActivity extends AppCompatActivity {
     }
     public void checkStatus(View view)
     {
+
         //checkStatus
+        Intent in=new Intent(this,Myservice.class);
+        in.putExtra("disid",districtId);
+        in.putExtra("age",Min_age);
+        if(Build.VERSION.SDK_INT>=Build.VERSION_CODES.O)
+        {
+            startForegroundService(in);
+        }
+        else
+        {
+            startService(in);
+        }
+
         Toast.makeText(this, "Button clicked", Toast.LENGTH_SHORT).show();
         Intent i=new Intent(getApplicationContext(),Results.class);
         i.putExtra("districtId",districtId);
@@ -216,5 +240,10 @@ public class MainActivity extends AppCompatActivity {
     {
         //checkStatus
         Toast.makeText(this, "CheckBox clicked", Toast.LENGTH_SHORT).show();
+    }
+    public void ageclick(View view)
+    {
+        //AGE
+        Min_age=18;
     }
 }
