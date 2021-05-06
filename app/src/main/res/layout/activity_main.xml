@@ -81,7 +81,7 @@
         android:layout_marginTop="36dp"
         android:text="VACCINE NOTIFIER"
         android:textColor="@color/black"
-        android:textSize="36sp" />
+        android:textSize="36dp" />
 
     <CheckedTextView
         android:id="@+id/checkedTextView2"
@@ -93,6 +93,16 @@
         android:layout_marginTop="30dp"
         android:onClick="ageclick"
         android:text="Check for 18+ :"
-        android:textSize="18sp" />
+        android:textSize="18dp" />
+
+    <CheckBox
+        android:id="@+id/checkBox2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/spinnerDistrict"
+        android:layout_marginStart="12dp"
+        android:layout_marginTop="18dp"
+        android:layout_toEndOf="@+id/checkedTextView2"
+        android:onClick="ageclick" />
 
 </RelativeLayout>

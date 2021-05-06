@@ -54,7 +54,7 @@ public class Myservice extends Service
             public int onStartCommand(Intent intent, int flags, int startId) {
               //  Log.d("date",formattedDate);
               // MainActivity mainActivity=new MainActivity();
-              age=intent.getIntExtra("age");
+              age=intent.getIntExtra("age",45);
               centre_id=intent.getStringExtra("disid");
                 loadSlots();
 
@@ -111,6 +111,7 @@ public class Myservice extends Service
                                     int capacity = session_obj.getInt("available_capacity");
                                     String date_session = session_obj.getString("date");
                                     int min_age = session_obj.getInt("min_age_limit");
+                                    Log.i("name",name);
                                  if (capacity > 0 && min_age == age) {
                                         centre_name.add(name);
                                         capacity_array.add(Integer.toString(capacity));
@@ -135,6 +136,7 @@ public class Myservice extends Service
                         @Override
                         public Map<String, String> getHeaders(){
                             Map<String, String> headers = new HashMap<String, String>();
+                            headers.put("accept","application/json");
                             headers.put("User-agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/90.0.4430.93 Safari/537.36");
                             return headers;
                         }
