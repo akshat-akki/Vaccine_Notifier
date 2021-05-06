@@ -7,24 +7,26 @@ import androidx.viewpager.widget.ViewPager;
 
 import android.os.Bundle;
 
+import java.util.ArrayList;
+
 public class Results extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_results);
-        MyListData[] myListData = new MyListData[] {
-                new MyListData("abcd", "23","09/10/20"),
-                new MyListData("abcd", "23","09/10/20"),
-                new MyListData("abcd", "23","09/10/20"),
-                new MyListData("abcd", "23","09/10/20"),
-                new MyListData("abcd", "23","09/10/20"),
-                new MyListData("abcd", "23","09/10/20"),
-                new MyListData("abcd", "23","09/10/20"),
-                new MyListData("abcd", "23","09/10/20"),
-                new MyListData("abcd", "23","09/10/20"),
-                new MyListData("abcd", "23","09/10/20")
-        };
+         ArrayList<String> centre=Myservice.centre_name;
+         ArrayList<String> date=Myservice.date;
+         ArrayList<String> capacity_array=Myservice.capacity_array;
 
+        MyListData[] myListData = new MyListData[centre.size()];
+        for(int i=0;i<centre.size();i++)
+        {
+            MyListData m=new MyListData();
+            m.setCentre(centre.get(i));
+            m.setAvailability(capacity_array.get(i));
+            m.setDate(date.get(i));
+            myListData[i]=m;
+        }
         RecyclerView recyclerView = (RecyclerView) findViewById(R.id.recyclerView);
         MyListAdapter adapter = new MyListAdapter(myListData);
         recyclerView.setHasFixedSize(true);

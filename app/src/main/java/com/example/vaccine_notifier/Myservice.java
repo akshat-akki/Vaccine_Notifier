@@ -46,9 +46,9 @@ public class Myservice extends Service
 
             String centre_id="637",date_para="05-05-2021";
             int age=45;
-            public ArrayList<String> centre_name=new ArrayList<String>();
-            public ArrayList<String> date=new ArrayList<String>();
-            public ArrayList<String> capacity_array=new ArrayList<String>();
+            public static ArrayList<String> centre_name=new ArrayList<String>();
+            public static ArrayList<String> date=new ArrayList<String>();
+            public static ArrayList<String> capacity_array=new ArrayList<String>();
 
             @Override
             public int onStartCommand(Intent intent, int flags, int startId) {
@@ -77,6 +77,11 @@ public class Myservice extends Service
                         handler.postDelayed(this, delay);
                     }
                 }, delay);
+//                Intent i=new Intent(getApplicationContext(),Results.class);
+//                i.putExtra("centreName",centre_name);
+//                i.putExtra("date",date);
+//                i.putExtra("availability",capacity_array);
+//                startActivity(i);
                 return START_STICKY;
             }
             private void loadSlots()

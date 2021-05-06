@@ -6,10 +6,10 @@ public class MyListData {
     private String centre;
     private String availability;
     private String date;
-    public MyListData(String centre, String availability,String date) {
-        this.centre=centre ;
-        this.availability = availability;
-        this.date=date;
+    public MyListData() {
+       centre="";
+       availability="";
+       date="";
     }
     public String getCentre() {
         return centre;
