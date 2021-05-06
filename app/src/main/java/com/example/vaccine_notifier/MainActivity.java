@@ -47,7 +47,7 @@ public class MainActivity extends AppCompatActivity {
     List<String> listStateid = new ArrayList<String>();
     List<String> listDistrict = new ArrayList<String>();
     List<String> listDistrictid = new ArrayList<String>();
-    String districtId;
+    String districtId="00000";
     int Min_age=45;
     int notif=1;
     @Override
@@ -86,7 +86,7 @@ public class MainActivity extends AppCompatActivity {
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                 if (isChecked) {
                     Min_age=18;
-                    Toast.makeText(MainActivity.this,Integer.toString(Min_age), Toast.LENGTH_SHORT).show();
+                   // Toast.makeText(MainActivity.this,Integer.toString(Min_age), Toast.LENGTH_SHORT).show();
 
                 } else {
                     Min_age=45;
@@ -110,7 +110,7 @@ public class MainActivity extends AppCompatActivity {
             }
         });
         addItemsOnSpinnerState();
-        addItemsOnSpinnerDistrict();
+
 
     }
 
@@ -193,6 +193,7 @@ public class MainActivity extends AppCompatActivity {
         };
       //  queue2.add(objectRequest);
         MySingleton.getInstance(this).addToRequestQueue(objectRequest);
+        addItemsOnSpinnerDistrict();
     }
 
     public void loadstates()
@@ -250,45 +251,45 @@ public class MainActivity extends AppCompatActivity {
 
 
     public void addItemsOnSpinnerDistrict() {
+        listDistrict.clear();
+        listDistrictid.clear();
         listDistrict.add("Choose one District");
         listDistrictid.add("00000");
         ArrayAdapter<String> dataAdapterDistrict = new ArrayAdapter<String>(this, android.R.layout.simple_spinner_item, listDistrict);
         dataAdapterDistrict.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         spinnerDistrict.setAdapter(dataAdapterDistrict);
     }
-    public void checkStatus(View view)
-    {
-
-        Intent in=new Intent(getApplicationContext(),Myservice.class);
-        in.putExtra("disid",districtId);
-        in.putExtra("age",Min_age);
-        in.putExtra("notif",notif);
-        if(Build.VERSION.SDK_INT>=Build.VERSION_CODES.O)
-        {
-            startForegroundService(in);
-        }
-        else
-        {
-            startService(in);
-        }
-        findViewById(R.id.progressBar).setVisibility(View.VISIBLE);
-        // Do your work here
-
-        //Toast.makeText(this, "Button clicked", Toast.LENGTH_SHORT).show();
-        final Handler handler = new Handler();
-        final int delay = 2000;
-        handler.postDelayed(new Runnable() {
-            public void run() {
-                findViewById(R.id.progressBar).setVisibility(View.INVISIBLE);
-                Intent intent = new Intent(getApplicationContext(), Results.class);
-                startActivity(intent);
-                finish();
+    public void checkStatus(View view) {
+        if (districtId.equals("00000")) {
+            Toast.makeText(this, "Choose a state and district first!!", Toast.LENGTH_SHORT).show();
+        } else {
+            Intent in = new Intent(getApplicationContext(), Myservice.class);
+            in.putExtra("disid", districtId);
+            in.putExtra("age", Min_age);
+            in.putExtra("notif", notif);
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                startForegroundService(in);
+            } else {
+                startService(in);
             }
-        }, delay);
+            findViewById(R.id.progressBar).setVisibility(View.VISIBLE);
+            // Do your work here
+
+            //Toast.makeText(this, "Button clicked", Toast.LENGTH_SHORT).show();
+            final Handler handler = new Handler();
+            final int delay = 2000;
+            handler.postDelayed(new Runnable() {
+                public void run() {
+                    findViewById(R.id.progressBar).setVisibility(View.INVISIBLE);
+                    Intent intent = new Intent(getApplicationContext(), Results.class);
+                    startActivity(intent);
+                    finish();
+                }
+            }, delay);
+
+        }
 
     }
-
-
     public void checkBoxClicked(View view)
     {
         //checkStatus

@@ -5,6 +5,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.viewpager.widget.ViewPager;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.widget.Toast;
 
@@ -12,8 +13,17 @@ import java.util.ArrayList;
 
 public class Results extends AppCompatActivity {
     @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+        Intent i=new Intent(this,MainActivity.class);
+        startActivity(i);
+        finish();
+    }
+
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
         setContentView(R.layout.activity_results);
          ArrayList<String> centre=Myservice.centre_name;
          ArrayList<String> date=Myservice.date;

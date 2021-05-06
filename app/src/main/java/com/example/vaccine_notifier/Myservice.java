@@ -56,7 +56,7 @@ public class Myservice extends Service
               //  Log.d("date",formattedDate);
               // MainActivity mainActivity=new MainActivity();
               age=intent.getIntExtra("age",45);
-                Toast.makeText(this,Integer.toString(age), Toast.LENGTH_SHORT).show();
+              //  Toast.makeText(this,Integer.toString(age), Toast.LENGTH_SHORT).show();
               //  age=18;
               centre_id=intent.getStringExtra("disid");
               noti=intent.getIntExtra("notif",1);
