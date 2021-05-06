@@ -61,6 +61,9 @@ public class Myservice extends Service
               centre_id=intent.getStringExtra("disid");
               noti=intent.getIntExtra("notif",1);
               //  Toast.makeText(this, Integer.toString(noti), Toast.LENGTH_LONG).show();
+                date.clear();
+                centre_name.clear();
+                capacity_array.clear();
                 loadSlots();
                 precount=count;
 
@@ -85,11 +88,13 @@ public class Myservice extends Service
                     startForeground(1, notification);
                 }
                     final Handler handler = new Handler();
-                    final int delay = 5 * 60 * 1000; // 1000 milliseconds == 1 second
+                    final int delay =  5*60*1000; // 1000 milliseconds == 1 second
                 if(noti==1) {
                     handler.postDelayed(new Runnable() {
                         public void run() {
-                            // Do your work here
+                            date.clear();
+                            centre_name.clear();
+                            capacity_array.clear();
                             loadSlots();
                             if (precount < count) {
                                 showNotification("VACCINE NOTIFIER", "NEW SLOTS AVAILABLE!! TAP TO CHECK NOW");
@@ -108,11 +113,7 @@ public class Myservice extends Service
             private void loadSlots()
             {
                 SimpleDateFormat df = new SimpleDateFormat("dd-MM-yyyy", Locale.getDefault());
-                for(int k=0;k<4;k++)
-                {
-                    if(k!=0)
-                    c.add(Calendar.DATE,7);
-                    String formattedDate = df.format(c.getTime());
+                String formattedDate = df.format(c.getTime());
                     Log.d("date",formattedDate);
                     date_para=formattedDate;
                     RequestQueue queue = Volley.newRequestQueue(this);
@@ -142,7 +143,7 @@ public class Myservice extends Service
                                  {
                                         centre_name.add(name);
                                         capacity_array.add(Integer.toString(capacity));
-                                        Log.i("name",name);
+                                        Log.i("centre name",name);
                                         Log.i("centre date",date_session);
                                         date.add(date_session);
                                  }
@@ -178,7 +179,7 @@ public class Myservice extends Service
                     //   Log.d("Centre names", centre_name.toString());
 
                 }
-            }
+
             @Override
             public void onTaskRemoved(Intent rootIntent) {
 

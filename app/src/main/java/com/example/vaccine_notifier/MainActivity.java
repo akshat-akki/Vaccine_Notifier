@@ -57,7 +57,7 @@ public class MainActivity extends AppCompatActivity {
         spinnerState=(Spinner)findViewById(R.id.spinnerState);
         spinnerDistrict=(Spinner)findViewById(R.id.spinnerDistrict);
         findViewById(R.id.progressBar).setVisibility(View.INVISIBLE);
-
+        findViewById(R.id.checkStatus).setVisibility(View.INVISIBLE);
         loadstates();
 
         ActivityCompat.requestPermissions(MainActivity.this,
@@ -141,6 +141,7 @@ public class MainActivity extends AppCompatActivity {
             districtId=listDistrictid.get(position);
             ((TextView) parent.getChildAt(0)).setTextColor(Color.BLACK);
             ((TextView) parent.getChildAt(0)).setTextSize(18);
+            findViewById(R.id.checkStatus).setVisibility(View.VISIBLE);
         }
 
         @Override
