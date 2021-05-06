@@ -232,10 +232,9 @@ public class MainActivity extends AppCompatActivity {
             startService(in);
         }
 
-        Toast.makeText(this, "Button clicked", Toast.LENGTH_SHORT).show();
-        Intent i=new Intent(getApplicationContext(),Results.class);
-        i.putExtra("districtId",districtId);
-        startActivity(i);
+        //Toast.makeText(this, "Button clicked", Toast.LENGTH_SHORT).show();
+        Intent intent=new Intent(getApplicationContext(),Results.class);
+        startActivity(intent);
     }
     public void checkBoxClicked(View view)
     {
