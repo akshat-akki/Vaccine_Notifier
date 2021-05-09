@@ -59,7 +59,7 @@ public class Myservice extends Service
                int stop=intent.getIntExtra("stop",0);
                 if(stop==1) {
                     noti=0;
-                    handler.removeCallbacksAndMessages(run);
+
                    stopForeground(true);
                    stopSelfResult(startId);
 
@@ -71,7 +71,7 @@ public class Myservice extends Service
                     //  Toast.makeText(this,Integer.toString(age), Toast.LENGTH_SHORT).show();
                     //  age=18;
                     centre_id = intent.getStringExtra("disid");
-                    noti = intent.getIntExtra("notif", 1);
+                    noti = intent.getIntExtra("notif", 0);
                     //  Toast.makeText(this, Integer.toString(noti), Toast.LENGTH_LONG).show();
                     date.clear();
                     centre_name.clear();
@@ -113,8 +113,13 @@ public class Myservice extends Service
                                     if (precount < count) {
                                         showNotification("VACCINE NOTIFIER", "NEW SLOTS AVAILABLE!! TAP TO CHECK NOW");
                                     }
+                                    handler.postDelayed(this, delay);
                                 }
-                                handler.postDelayed(this, delay);
+                                else
+                                {
+                                    handler.removeCallbacksAndMessages(run);
+                                }
+
                             }
                         }, delay);
 //                Intent i=new Intent(getApplicationContext(),Results.class);
