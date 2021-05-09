@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".moreInfo">
+<TextView
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:id="@+id/text"
+    android:text="App pinning / App locking"
+    android:textColor="@color/black"
+    android:textSize="30dp"
+    android:layout_margin="10dp"
+    ></TextView>
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/text2"
+        android:text="When you open the recent apps tray, drag your app downwards (it will be locked). So, even if you clear recent apps, it will not clear them from the background. Drag downwards again to clear your app from the background.
+On some phones, you need to long-press Your app and then choose the padlock icon from the menu:
+"
+        android:textSize="15dp"
+        android:layout_below="@+id/text"
+        android:layout_margin="10dp"
+        ></TextView>
+    <ImageView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/image"
+        android:background="@drawable/more_info"
+        android:layout_below="@id/text2"
+        android:layout_margin="20dp"
+        ></ImageView>
+</RelativeLayout>

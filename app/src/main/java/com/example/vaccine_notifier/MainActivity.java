@@ -14,12 +14,17 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.util.Log;
+import android.view.Gravity;
+import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
+import android.widget.LinearLayout;
+import android.widget.PopupWindow;
 import android.widget.Spinner;
 import android.widget.Switch;
 import android.widget.TextView;
@@ -102,7 +107,44 @@ public class MainActivity extends AppCompatActivity {
                 if(b)
                 {
                     notif=1;
+                   // findViewById(R.id.relativeLayoutMain).setAlpha(0.2f);
                    // Toast.makeText(MainActivity.this,Integer.toString(notif), Toast.LENGTH_SHORT).show();
+                    LayoutInflater inflater = (LayoutInflater)
+                            getSystemService(LAYOUT_INFLATER_SERVICE);
+                    View popupView = inflater.inflate(R.layout.popup_info, null);
+
+                    // create the popup window
+                    int width = LinearLayout.LayoutParams.WRAP_CONTENT;
+                    int height = LinearLayout.LayoutParams.WRAP_CONTENT;
+                    boolean focusable = true; // lets taps outside the popup also dismiss it
+                    final PopupWindow popupWindow = new PopupWindow(popupView, width, height, focusable);
+
+                    // show the popup window
+                    // which view you pass in doesn't matter, it is only used for the window token
+                    popupWindow.showAtLocation(findViewById(R.id.checkStatus), Gravity.CENTER, 0, 0);
+                    popupView.findViewById(R.id.moreInfo).setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            Intent intent1=new Intent(getApplicationContext(),moreInfo.class);
+                            startActivity(intent1);
+                        }
+                    });
+                 //    dismiss the popup window when touched
+            popupView.setOnTouchListener(new View.OnTouchListener() {
+                @Override
+                public boolean onTouch(View v, MotionEvent event) {
+                   // findViewById(R.id.relativeLayoutMain).setAlpha(1);
+                    popupWindow.dismiss();
+                    return false;
+                }
+            });
+                    popupView.findViewById(R.id.exitButton).setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            //findViewById(R.id.relativeLayoutMain).setAlpha(1);
+                            popupWindow.dismiss();
+                        }
+                    });
 
                 }
                 else
@@ -112,7 +154,7 @@ public class MainActivity extends AppCompatActivity {
             }
         });
         addItemsOnSpinnerState();
-
+      
 
     }
 
@@ -193,6 +235,10 @@ public class MainActivity extends AppCompatActivity {
                 return headers;
             }
         };
+//        if(listDistrict.size()<=1)
+//        {
+//            Toast.makeText(this, "Your internet connection seems slow.Please try again after a few seconds.", Toast.LENGTH_SHORT).show();
+//        }
       //  queue2.add(objectRequest);
         MySingleton.getInstance(this).addToRequestQueue(objectRequest);
         addItemsOnSpinnerDistrict();
@@ -239,6 +285,12 @@ public class MainActivity extends AppCompatActivity {
                 return headers;
             }
         };
+
+//                if(listState.size()<=1)
+//                {
+//                    Toast.makeText(getApplicationContext(), "Your internet connection seems slow.Please try again after a few seconds.", Toast.LENGTH_SHORT).show();
+//                }
+
       //  queue.add(stringRequest);
         MySingleton.getInstance(this).addToRequestQueue(stringRequest);
         addListenerOnSpinnerItemSelection();
