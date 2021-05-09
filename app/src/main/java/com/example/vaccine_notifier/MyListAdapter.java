@@ -34,7 +34,7 @@ public class MyListAdapter extends RecyclerView.Adapter<MyListAdapter.ViewHolder
         holder.relativeLayout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Toast.makeText(view.getContext(),myListData.getCentre(),Toast.LENGTH_LONG).show();
+                //Toast.makeText(view.getContext(),myListData.getCentre(),Toast.LENGTH_LONG).show();
             }
         });
     }

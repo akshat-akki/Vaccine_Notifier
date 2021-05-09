@@ -42,7 +42,8 @@ import java.util.Map;
 public class Myservice extends Service
         {
             Calendar c = Calendar.getInstance();
-
+            Runnable run;
+            Handler handler;
             int count=0;
             int precount=0;
             String centre_id="637",date_para="05-05-2021";
@@ -51,62 +52,77 @@ public class Myservice extends Service
             public static ArrayList<String> date=new ArrayList<String>();
             public static ArrayList<String> capacity_array=new ArrayList<String>();
             int noti=0;
+            String districtnew="";
             @Override
             public int onStartCommand(Intent intent, int flags, int startId) {
-              //  Log.d("date",formattedDate);
-              // MainActivity mainActivity=new MainActivity();
-              age=intent.getIntExtra("age",45);
-              //  Toast.makeText(this,Integer.toString(age), Toast.LENGTH_SHORT).show();
-              //  age=18;
-              centre_id=intent.getStringExtra("disid");
-              noti=intent.getIntExtra("notif",1);
-              //  Toast.makeText(this, Integer.toString(noti), Toast.LENGTH_LONG).show();
-                date.clear();
-                centre_name.clear();
-                capacity_array.clear();
-                loadSlots();
-                precount=count;
+               int stop=intent.getIntExtra("stop",0);
+                if(stop==1) {
+                    noti=0;
+                    handler.removeCallbacksAndMessages(run);
+                   stopForeground(true);
+                   stopSelfResult(startId);
+
+               }
+                else {
+                    //  Log.d("date",formattedDate);
+                    // MainActivity mainActivity=new MainActivity();
+                    age = intent.getIntExtra("age", 45);
+                    //  Toast.makeText(this,Integer.toString(age), Toast.LENGTH_SHORT).show();
+                    //  age=18;
+                    centre_id = intent.getStringExtra("disid");
+                    noti = intent.getIntExtra("notif", 1);
+                    //  Toast.makeText(this, Integer.toString(noti), Toast.LENGTH_LONG).show();
+                    date.clear();
+                    centre_name.clear();
+                    capacity_array.clear();
+                    loadSlots();
+                    precount = count;
 
                     createNotificationChannel();
                     Intent intent1 = new Intent(this, MainActivity.class);
                     PendingIntent p = PendingIntent.getActivity(this, 0, intent1, 0);
-                if(noti==1) {
-                    Notification notification = new NotificationCompat.Builder(this, "channel1")
-                            .setContentTitle("Vaccine_Notifier")
-                            .setContentText("Constantly checking for vacant slots!!")
-                            .setSmallIcon(R.mipmap.ic_launcher)
-                            .setContentIntent(p).build();
-                    startForeground(1, notification);
-                }
-                else
-                {
-                    Notification notification = new NotificationCompat.Builder(this, "channel1")
-                            .setContentTitle("Vaccine_Notifier")
-                            .setContentText("Tap to check for vacant slots!!")
-                            .setSmallIcon(R.mipmap.ic_launcher)
-                            .setContentIntent(p).build();
-                    startForeground(1, notification);
-                }
-                    final Handler handler = new Handler();
-                    final int delay =  5*60*1000; // 1000 milliseconds == 1 second
-                if(noti==1) {
-                    handler.postDelayed(new Runnable() {
-                        public void run() {
-                            date.clear();
-                            centre_name.clear();
-                            capacity_array.clear();
-                            loadSlots();
-                            if (precount < count) {
-                                showNotification("VACCINE NOTIFIER", "NEW SLOTS AVAILABLE!! TAP TO CHECK NOW");
-                            }
-                            handler.postDelayed(this, delay);
+                    if (noti == 1) {
+                        Notification notification = new NotificationCompat.Builder(this, "channel1")
+                                .setContentTitle("Vaccine_Notifier")
+                                .setContentText("Constantly checking for vacant slots!!")
+                                .setSmallIcon(R.mipmap.ic_launcher)
+                                .setContentIntent(p).build();
+                        startForeground(1, notification);
+                    } else {
+                        Notification notification = new NotificationCompat.Builder(this, "channel1")
+                                    .setContentTitle("Vaccine_Notifier")
+                                    .setContentText("Tap to check for vacant slots!!")
+                                    .setSmallIcon(R.mipmap.ic_launcher)
+                                    .setContentIntent(p).build();
+                            startForeground(1, notification);
                         }
-                    }, delay);
+                    handler = new Handler();
+                    final int delay = 10000; // 1000 milliseconds == 1 second
+
+                    if (noti == 1) {
+
+                        handler.postDelayed(run =new Runnable() {
+                            public void run() {
+                                Log.v("entered","entry");
+                                date.clear();
+                                centre_name.clear();
+                                capacity_array.clear();
+                                if(noti==1) {
+
+                                    loadSlots();
+                                    if (precount < count) {
+                                        showNotification("VACCINE NOTIFIER", "NEW SLOTS AVAILABLE!! TAP TO CHECK NOW");
+                                    }
+                                }
+                                handler.postDelayed(this, delay);
+                            }
+                        }, delay);
 //                Intent i=new Intent(getApplicationContext(),Results.class);
 //                i.putExtra("centreName",centre_name);
 //                i.putExtra("date",date);
 //                i.putExtra("availability",capacity_array);
 //                startActivity(i);
+                    }
                 }
                 return START_STICKY;
             }
@@ -122,6 +138,7 @@ public class Myservice extends Service
                         @Override
                         public void onResponse(JSONObject response) {
                             Log.v("slots","called");
+                            Log.v("slots",centre_id);
                             try {
                                 //getting the whole json object from the response
                                 JSONObject obj = response;
@@ -192,16 +209,6 @@ public class Myservice extends Service
                         SystemClock.elapsedRealtime() + 1000,
                          restartPendingIntent);
 */
-                Intent i=new Intent(this,Myservice.class);
-                if(Build.VERSION.SDK_INT>=Build.VERSION_CODES.O)
-                {
-                    startForegroundService(i);
-                }
-                else
-                {
-                    startService(i);
-                }
-                super.onTaskRemoved(rootIntent);
             }
 
             private void createNotificationChannel() {

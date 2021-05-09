@@ -4,7 +4,9 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 
 import android.Manifest;
+import android.app.ActivityManager;
 import android.content.ComponentName;
+import android.content.Context;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.content.pm.PackageManager;
@@ -55,7 +57,8 @@ public class MainActivity extends AppCompatActivity {
     List<String> listDistrictid = new ArrayList<String>();
     String districtId="00000";
     int Min_age=45;
-    int notif=1;
+    int notif=0;
+    int stop=0;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -66,28 +69,11 @@ public class MainActivity extends AppCompatActivity {
         findViewById(R.id.progressBar).setVisibility(View.INVISIBLE);
         findViewById(R.id.checkStatus).setVisibility(View.INVISIBLE);
         loadstates();
+        notif=0;
 
         ActivityCompat.requestPermissions(MainActivity.this,
                 new String[]{Manifest.permission.FOREGROUND_SERVICE,Manifest.permission.RECEIVE_BOOT_COMPLETED,Manifest.permission.BROADCAST_WAP_PUSH},
                 1);
-        try {
-            Intent intent = new Intent();
-            String manufacturer = android.os.Build.MANUFACTURER;
-            if ("xiaomi".equalsIgnoreCase(manufacturer)) {
-                intent.setComponent(new ComponentName("com.miui.securitycenter", "com.miui.permcenter.autostart.AutoStartManagementActivity"));
-            } else if ("oppo".equalsIgnoreCase(manufacturer)) {
-                intent.setComponent(new ComponentName("com.coloros.safecenter", "com.coloros.safecenter.permission.startup.StartupAppListActivity"));
-            } else if ("vivo".equalsIgnoreCase(manufacturer)) {
-                intent.setComponent(new ComponentName("com.vivo.permissionmanager", "com.vivo.permissionmanager.activity.BgStartUpManagerActivity"));
-            }
-
-            List<ResolveInfo> list = getApplicationContext().getPackageManager().queryIntentActivities(intent, PackageManager.MATCH_DEFAULT_ONLY);
-            if  (list.size() > 0) {
-                getApplicationContext().startActivity(intent);
-            }
-        } catch (Exception e) {
-
-        }
         Switch s=(Switch)findViewById(R.id.switch2);
         s.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
@@ -106,7 +92,9 @@ public class MainActivity extends AppCompatActivity {
             public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
                 if(b)
                 {
-                    notif=1;
+                    if(notif==1)
+                    notif=0;
+                    else notif=1;
                    // findViewById(R.id.relativeLayoutMain).setAlpha(0.2f);
                    // Toast.makeText(MainActivity.this,Integer.toString(notif), Toast.LENGTH_SHORT).show();
                     LayoutInflater inflater = (LayoutInflater)
@@ -146,10 +134,6 @@ public class MainActivity extends AppCompatActivity {
                         }
                     });
 
-                }
-                else
-                {
-                    notif=0;
                 }
             }
         });
@@ -194,7 +178,16 @@ public class MainActivity extends AppCompatActivity {
         }
     });
     }
-
+    private boolean isMyServiceRunning(Class<?> serviceClass) {
+        ActivityManager manager = (ActivityManager) getSystemService(Context.ACTIVITY_SERVICE);
+        //noinspection deprecation
+        for (ActivityManager.RunningServiceInfo service : manager.getRunningServices(Integer.MAX_VALUE)) {
+            if (serviceClass.getName().equals(service.service.getClassName())) {
+                return true;
+            }
+        }
+        return false;
+    }
     public void load_districts(String id)
     {
         RequestQueue queue2= Volley.newRequestQueue(this);
@@ -317,31 +310,44 @@ public class MainActivity extends AppCompatActivity {
         if (districtId.equals("00000")) {
             Toast.makeText(this, "Choose a state and district first!!", Toast.LENGTH_SHORT).show();
         } else {
-            Intent in = new Intent(getApplicationContext(), Myservice.class);
-            in.putExtra("disid", districtId);
-            in.putExtra("age", Min_age);
-            in.putExtra("notif", notif);
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                startForegroundService(in);
-            } else {
-                startService(in);
-            }
-            findViewById(R.id.progressBar).setVisibility(View.VISIBLE);
-            // Do your work here
-
-            //Toast.makeText(this, "Button clicked", Toast.LENGTH_SHORT).show();
-            final Handler handler = new Handler();
-            final int delay = 2000;
-            handler.postDelayed(new Runnable() {
-                public void run() {
-                    findViewById(R.id.progressBar).setVisibility(View.INVISIBLE);
-                    Intent intent = new Intent(getApplicationContext(), Results.class);
-                    startActivity(intent);
-                    finish();
+            if (isMyServiceRunning(Myservice.class)) {
+                Intent in = new Intent(getApplicationContext(), Myservice.class);
+                in.putExtra("disid", districtId);
+                in.putExtra("age", Min_age);
+                in.putExtra("notif", notif);
+                in.putExtra("stop", 1);
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                    startForegroundService(in);
+                } else {
+                    startService(in);
                 }
-            }, delay);
+            }
+                Intent in = new Intent(getApplicationContext(), Myservice.class);
+                in.putExtra("disid", districtId);
+                in.putExtra("age", Min_age);
+                in.putExtra("notif", notif);
+                in.putExtra("stop",stop);
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                    startForegroundService(in);
+                } else {
+                    startService(in);
+                }
+                findViewById(R.id.progressBar).setVisibility(View.VISIBLE);
+                // Do your work here
 
-        }
+                //Toast.makeText(this, "Button clicked", Toast.LENGTH_SHORT).show();
+                final Handler handler = new Handler();
+                final int delay = 2000;
+                handler.postDelayed(new Runnable() {
+                    public void run() {
+                        findViewById(R.id.progressBar).setVisibility(View.INVISIBLE);
+                        Intent intent = new Intent(getApplicationContext(), Results.class);
+                        startActivity(intent);
+                        finish();
+                    }
+                }, delay);
+
+            }
 
     }
     public void checkBoxClicked(View view)
