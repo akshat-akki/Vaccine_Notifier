@@ -55,6 +55,7 @@ public class Myservice extends Service
             String districtnew="";
             @Override
             public int onStartCommand(Intent intent, int flags, int startId) {
+                precount=0;
                int stop=intent.getIntExtra("stop",0);
                 if(stop==1) {
                     noti=0;
@@ -96,10 +97,9 @@ public class Myservice extends Service
                                     .setContentIntent(p).build();
                             startForeground(1, notification);
                         }
+                    if (noti == 1) {
                     handler = new Handler();
                     final int delay = 10000; // 1000 milliseconds == 1 second
-
-                    if (noti == 1) {
 
                         handler.postDelayed(run =new Runnable() {
                             public void run() {
